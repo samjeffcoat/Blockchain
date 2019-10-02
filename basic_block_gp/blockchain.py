@@ -120,7 +120,7 @@ class Blockchain(object):
         # return True or False
         guess = f'{block_string{proof}}'.encode()
         guess_hash=hashlib.sha256(guess).hexdigest()
-        return guess_hash[:6]== "000000"
+        return guess_hash[:3]== "000"
 
     def valid_chain(self, chain):
         """
@@ -141,15 +141,12 @@ class Blockchain(object):
             print("\n-------------------\n")
             # Check that the hash of the block is correct
             # TODO: Return false if hash isn't correct
-
-            # Check that the Proof of Work is correct
-            # TODO: Return false if proof isn't correct
-
+            if block['previous_hash'] != self.hash(prev_block):
+                print(f"Invalid previous hash on block{current_index}")
+                return False
             prev_block = block
-            current_index += 1
-
+            current_index +=1
         return True
-
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -171,10 +168,15 @@ def mine():
     # The sender is "0" to signify that this node has mine a new coin
     # The recipient is the current node, it did the mining!
     # The amount is 1 coin as a reward for mining the next block
-
+    blockchain.new_transaction(
+        sender= "0",
+        recipient = node_identifier,
+        amount = 1,
+    )
     # Forge the new Block by adding it to the chain
     # TODO
-
+    previous_hash= blockchain.hash(blockchain.last_block)
+    block= blockchain.new_block(proof, previous_hash)
     # Send a response with the new block
     response = {
        # 'message': "New Block Forged",
@@ -207,9 +209,19 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        'chain': blockchain.chain
     }
     return jsonify(response), 200
+
+@app.route('/valid_chain', methods= ['GET'])
+def validate_chain():
+    result = blockchain.valid_chain(blockchain.chain)
+
+    response={
+        'validity': result
+    }
+    return jsonify(response), 200
+
 
 
 # Run the program on port 5000
