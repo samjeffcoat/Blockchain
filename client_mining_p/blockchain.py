@@ -84,13 +84,13 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, block):
-        """
+ """   def proof_of_work(self, block):
+        
         Simple Proof of Work Algorithm
         Find a number p such that hash(last_block_string, p) contains 6 leading
         zeroes
         :return: A valid proof for the provided block
-        """
+        
         # TODO
         pass
         # return proof
@@ -99,7 +99,7 @@ class Blockchain(object):
         proof = 0
         while self.valid_proof(block_string, proof) is False:
             proof += 1
-        return proof
+        return proof"""
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -117,7 +117,7 @@ class Blockchain(object):
         # return True or False
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:3] == "000"
+        return guess_hash[:6] == "000000"
 
     def valid_chain(self, chain):
         """
