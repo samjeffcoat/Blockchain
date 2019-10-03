@@ -205,11 +205,14 @@ def validate_chain():
         'validity': result
     }
     return jsonify(response), 200
+@app.route('/last_block', methods= ['GET'])
+def  return_last_block():
+    last_block = blockchain.chain[-1]
 
-#@app.route('/last_block', methods= ['GET'])
-
-#def last_block():
- #   result = 
+    response = {
+      'last_block': last_block 
+  }
+    return jsonify(response), 200
 
 
 # Run the program on port 5000
